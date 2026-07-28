@@ -429,11 +429,6 @@ class ParamGrid():
     def __init__(self):
         self.available_estimators = self.count()
         self.count()
-        
-    def count(self, ):
-
-        for items in self.custom_paramter_grid().items():
-            print(items)
 
     def custom_paramter_grid() -> dict:
 
