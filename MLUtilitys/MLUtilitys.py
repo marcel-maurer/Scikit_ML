@@ -427,9 +427,8 @@ class PlotManager():
 class ParamGrid():
 
     def __init__(self):
-        self.available_estimators = self.count()
-        self.count()
-
+        pass
+            
     def custom_paramter_grid() -> dict:
 
         return {
