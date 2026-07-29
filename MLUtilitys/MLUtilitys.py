@@ -20,7 +20,7 @@ class PlotManager():
             return
 
 
-    @staticmethod
+    
     def plot_scores(
         data,
         x_column,
