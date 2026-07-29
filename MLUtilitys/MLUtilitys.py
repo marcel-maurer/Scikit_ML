@@ -22,6 +22,7 @@ class PlotManager():
 
     
     def plot_scores(
+        self,
         data,
         x_column,
         score_columns,
