@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy
-
+import pandas as pd
 
 from pathlib import Path
 from textwrap import dedent
@@ -19,74 +19,41 @@ class PlotManager():
             print(f"imp error:{import_error} ")
             return
 
-    def base_vs_transform(Data):
-            
-            df = Data
 
-            x = range(len(df))
+    @staticmethod
+    def plot_scores(
+        data,
+        x_column,
+        score_columns,
+        title="Model Comparison",
+        ylabel="Score"
+    ):
+        # Falls eine Liste von Dictionaries übergeben wird
+        if isinstance(data, list):
+            data = pd.DataFrame(data)
 
-            plt.figure(figsize=(12 , 6))
+        x = range(len(data))
 
-            # Base Data
-            plt.plot(
-                x,
-                df["roc_score"],
-                marker="o",
-                linewidth=2,
-                label="roc_score"
-            )
+        plt.figure(figsize=(12, 6))
 
-            plt.plot(
-                x,
-                df["f1_score"],
-                marker="o",
-                linewidth=2,
-                label="f1_score"
-            )
+        for column in score_columns:
+            if column in data.columns:
+                plt.plot(
+                    x,
+                    data[column],
+                    marker="o",
+                    linewidth=2,
+                    label=column
+                )
 
-            plt.plot(
-                x,
-                df["pr_score"],
-                marker="s",
-                linewidth=2,
-                label="pr_score"
-            )
-
-            # Base Data
-            plt.plot(
-                x,
-                df["tuned_roc_score"],
-                marker="o",
-                linewidth=2,
-                label="tuned_cv_train_"
-            )
-
-            plt.plot(
-                x,
-                df["tuned_f1_score"],
-                marker="o",
-                linewidth=2,
-                label="tuned_f1_score"
-            )
-
-            plt.plot(
-                x,
-                df["tuned_pr_score"],
-                marker="s",
-                linewidth=2,
-                label="tuned_pr_score"
-                
-            )
-
-            plt.xticks(x, df["estimator"], rotation=45)
-            plt.ylabel("Accuracy")
-            plt.xlabel("Model")
-            plt.title("Base vs Transformed Data Performance")
-            plt.legend()
-            plt.grid(True, linestyle="--", alpha=0.5)
-
-            plt.tight_layout()
-            plt.show()
+        plt.xticks(x, data[x_column], rotation=45)
+        plt.xlabel(x_column)
+        plt.ylabel(ylabel)
+        plt.title(title)
+        plt.grid(True, linestyle="--", alpha=0.5)
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
 
     def v2(self , data_frame):
         df = data_frame.DataFrame(self.results)
@@ -427,9 +394,20 @@ class PlotManager():
 class ParamGrid():
 
     def __init__(self):
-        pass
-            
-    def custom_paramter_grid() -> dict:
+        self.available_estimators = self.count()
+        self.count()
+
+    def scoring_dict(self):
+
+        return {
+
+            "f1":"f1",
+            "accuracy":"accuracy",
+            "precision":"precision",
+
+        }
+
+    def custom_paramter_grid(self):
 
         return {
 
