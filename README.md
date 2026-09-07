@@ -4,7 +4,7 @@ A collection of my Machine Learning projects and experiments using Python and sc
 
 This repository documents my practical learning process in **Machine Learning, Data Science, and Python development**. It contains projects ranging from classical classification problems to imbalanced datasets and neural networks.
 
-The repository is also part of my application portfolio and is intended to give an insight into how I approach programming, problem solving, debugging, and learning new technologies.
+The repository is also part of my application portfolio and provides an insight into how I approach programming, problem solving, debugging, and learning new technologies.
 
 ---
 
@@ -12,7 +12,7 @@ The repository is also part of my application portfolio and is intended to give 
 
 I created this repository while learning Machine Learning and Python development.
 
-Rather than focusing only on the theoretical side of Machine Learning, I wanted to build actual projects and experiment with different approaches.
+Rather than focusing only on the theoretical side of Machine Learning, I wanted to build actual projects, experiment with different approaches, and understand the underlying concepts through practical implementation.
 
 Throughout the projects I worked with:
 
@@ -44,7 +44,13 @@ Scikit_ML/
 │   └── Reusable Machine Learning utilities
 │
 ├── Projects/
-│   └── My Machine Learning projects
+│   ├── OwnVersion/
+│   │   └── My original implementation
+│   │
+│   ├── RefactoredVersion/
+│   │   └── Improved and extended implementation
+│   │
+│   └── Other Machine Learning projects
 │
 └── courses/
     └── Udemy learning material and exercises
@@ -52,15 +58,27 @@ Scikit_ML/
 
 ### `Projects/`
 
-This is the most relevant part of the repository for my own Machine Learning development.
+This is the main part of the repository containing my Machine Learning projects and implementations.
 
-It contains the projects I worked on and the implementations I developed and modified while learning.
+### `OwnVersion/`
+
+Contains my original implementation of the project.
+
+This version represents how I approached the problem independently and provides a direct insight into my own programming and problem-solving approach.
+
+### `RefactoredVersion/`
+
+Contains the subsequently improved and extended implementation.
+
+The original implementation was used as a basis for further development. During this process I worked on improving the structure, fixing problems, extending functionality, and experimenting with different approaches.
+
+AI assistance was used during parts of this development process, but the resulting implementation was tested, debugged, understood, and adapted by me.
 
 ### `MLUtilitys/`
 
 Contains reusable Python functionality for Machine Learning projects.
 
-The purpose of this part of the repository is to avoid rebuilding the same functionality for every project and to make my code more modular.
+The purpose of this part of the repository is to avoid rebuilding the same functionality for every project and to make my code more modular and reusable.
 
 ### `CSVData/`
 
@@ -70,31 +88,29 @@ Contains data used by the different Machine Learning projects.
 
 Contains exercises and projects created while following external courses.
 
-These files are included to document parts of my learning process and should be distinguished from my own project implementations.
+These files document parts of my learning process and should be distinguished from my own project implementations.
 
 ---
 
-# ⭐ My Own Implementation
+# ⭐ Original vs. Refactored Implementation
 
-One important part of this repository is my own implementation inside the `Projects` directory.
+One of the main examples of my development process can be found in the `Projects` directory.
 
-The **Own Version** represents how I approached the problem myself before further improvements and refactoring.
+The project is separated into two versions:
 
-This is particularly useful for understanding my personal programming approach and how I solve Machine Learning problems without relying on a finished implementation.
+### `OwnVersion`
 
-Other projects in the repository were developed during the same learning process and were partly improved with AI assistance.
+My original implementation.
 
-When using AI-generated suggestions, I do not treat the generated code as a finished solution. I test and modify it myself, debug problems, investigate unexpected behavior, and adapt the implementation to my own requirements.
+This version shows how I approached the problem myself and how I structured the solution before further refinement.
 
-This means that the repository represents not only the final code, but also my ability to:
+### `RefactoredVersion`
 
-* understand existing code
-* identify problems
-* debug implementations
-* modify functionality
-* combine different components
-* test different approaches
-* learn unfamiliar concepts independently
+The subsequently improved implementation.
+
+This version builds upon the original code and includes changes made during further development, debugging, experimentation, and refactoring.
+
+The comparison between both versions shows not only the final result, but also how a working implementation can be analyzed, improved, and extended.
 
 ---
 
@@ -224,25 +240,30 @@ I use AI primarily as a learning and development assistant, for example to:
 * compare different approaches
 * get explanations of programming concepts
 
-Some of the Python implementations in this repository were improved with AI assistance.
+Some implementations in this repository were refined with AI assistance.
 
-However, I am responsible for testing and adapting the resulting code. I debug the implementations myself and modify them according to the requirements of the project.
+However, AI-generated suggestions are not treated as finished solutions. I test the resulting code, debug problems, investigate unexpected behavior, and adapt the implementation to the requirements of the project.
 
-I consider this an important part of modern software development: knowing how to use AI effectively while still understanding and being able to work with the resulting code.
+This workflow has helped me work with larger implementations while continuing to develop my own understanding of the underlying code and concepts.
+
+I consider the ability to use AI effectively while still understanding, testing, and modifying the resulting code an important part of modern software development.
 
 ---
 
 # 📚 My Learning Approach
 
-This repository is intentionally not presented as a finished commercial Machine Learning framework.
-
-It documents my development as a programmer.
+This repository documents my development as a programmer and Machine Learning developer.
 
 Some projects are experiments, some are based on courses, and others have been developed further into my own implementations.
 
-I believe that programming is best learned by actually building things, encountering problems, debugging them, and improving the implementation afterwards.
+I believe programming is best learned by building things, encountering problems, debugging them, and improving the implementation afterwards.
 
-One of my main goals is therefore not simply to get a model working, but to understand **why it works, why it fails, and how I can change it**.
+One of my main goals is therefore not simply to get a model working, but to understand:
+
+* why it works
+* why it fails
+* how the individual components interact
+* how I can modify and improve it
 
 ---
 
@@ -258,7 +279,7 @@ Future projects will focus increasingly on:
 * automated model evaluation
 * more advanced Machine Learning techniques
 * Deep Learning
-* building complete end-to-end applications
+* complete end-to-end applications
 
 ---
 
@@ -266,6 +287,4 @@ Future projects will focus increasingly on:
 
 This repository is part of my programming portfolio and demonstrates my practical experience and ongoing development in **Python and Machine Learning**.
 
-It is not intended to show that I already know everything.
-
-Instead, it shows **what I have built, what I have learned, how I solve problems, and how I continue improving my skills.**
+It is intended to show what I have built, what I have learned, how I approach problems, and how I continue improving my skills.
