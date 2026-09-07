@@ -1,145 +1,100 @@
 # Scikit_ML
 
-A collection of my Python and Machine Learning projects.
+A collection of my Machine Learning projects and experiments using Python and scikit-learn.
 
-This repository documents my practical development in **Machine Learning, Data Science, and Python programming**. It contains projects covering data preprocessing, feature engineering, model training, evaluation, cross-validation, hyperparameter optimization, and handling imbalanced datasets.
+This repository documents my practical learning process in **Machine Learning, Data Science, and Python development**. It contains projects ranging from classical classification problems to imbalanced datasets and neural networks.
 
-The repository serves both as a learning environment and as a portfolio demonstrating my practical experience with Python and Machine Learning.
+The repository is also part of my application portfolio and is intended to give an insight into how I approach programming, problem solving, debugging, and learning new technologies.
 
 ---
 
-## 🎯 Purpose
+## About This Repository
 
-My goal is to learn Machine Learning not only theoretically, but by actually implementing and applying the individual components in practical projects.
+I created this repository while learning Machine Learning and Python development.
 
-Throughout these projects, I have worked from basic Machine Learning models towards more complex pipelines, reusable utilities, and custom implementations.
+Rather than focusing only on the theoretical side of Machine Learning, I wanted to build actual projects and experiment with different approaches.
 
-My main areas of focus include:
+Throughout the projects I worked with:
 
-* Python
-* scikit-learn
-* Data preprocessing and analysis
+* Data preprocessing
 * Feature engineering
 * Classification
-* Model evaluation and comparison
+* Model evaluation
 * Cross-validation
 * Hyperparameter optimization
-* Handling imbalanced datasets
+* Imbalanced datasets
 * Machine Learning pipelines
-* Object-oriented programming
-* Reusable Machine Learning utilities
+* Neural networks
+* Python classes and reusable utilities
+* Debugging and improving existing implementations
+
+The repository also contains different stages of my development. Some projects are smaller learning experiments, while others have evolved into larger and more structured implementations.
 
 ---
 
-## 📂 Repository Structure
+# 📂 Repository Structure
 
 ```text
 Scikit_ML/
 │
 ├── CSVData/
-│   ├── CreditFraud/
-│   ├── TitanicDisaster/
-│   └── bankChurn/
+│   └── Project datasets
 │
 ├── MLUtilitys/
-│   └── MLUtilitys.py
+│   └── Reusable Machine Learning utilities
 │
 ├── Projects/
-│   ├── BankChurn.py
-│   ├── CreditFraud.py
-│   ├── Titanic_Disaster.py
-│   └── OwnVersion.ipynb
+│   └── My Machine Learning projects
 │
 └── courses/
-    └── Udemy/
+    └── Udemy learning material and exercises
 ```
 
 ### `Projects/`
 
-Contains my Machine Learning projects and my own implementations.
+This is the most relevant part of the repository for my own Machine Learning development.
+
+It contains the projects I worked on and the implementations I developed and modified while learning.
 
 ### `MLUtilitys/`
 
-Contains reusable classes and functions that I developed and use across different Machine Learning projects.
+Contains reusable Python functionality for Machine Learning projects.
+
+The purpose of this part of the repository is to avoid rebuilding the same functionality for every project and to make my code more modular.
 
 ### `CSVData/`
 
-Contains datasets and project-specific data used by the different projects.
+Contains data used by the different Machine Learning projects.
 
 ### `courses/Udemy/`
 
-Contains exercises and learning material from courses I used during my learning process.
+Contains exercises and projects created while following external courses.
+
+These files are included to document parts of my learning process and should be distinguished from my own project implementations.
 
 ---
 
-# ⭐ Own Implementation
+# ⭐ My Own Implementation
 
-One of the most important parts of this repository is:
+One important part of this repository is my own implementation inside the `Projects` directory.
 
-`Projects/OwnVersion.ipynb`
+The **Own Version** represents how I approached the problem myself before further improvements and refactoring.
 
-This notebook contains my own implementation of a Machine Learning project and provides a more direct view of my personal programming and problem-solving approach.
+This is particularly useful for understanding my personal programming approach and how I solve Machine Learning problems without relying on a finished implementation.
 
-The other Python projects were developed during my learning process and were partially refined with the help of AI tools.
+Other projects in the repository were developed during the same learning process and were partly improved with AI assistance.
 
-I did not simply copy and use generated code. I used AI assistance as a development and learning tool and subsequently:
+When using AI-generated suggestions, I do not treat the generated code as a finished solution. I test and modify it myself, debug problems, investigate unexpected behavior, and adapt the implementation to my own requirements.
 
-* analyzed the generated code
-* tested the implementation
-* debugged errors
-* modified the code
-* adapted it to my requirements
-* extended functionality
-* investigated unexpected behavior
+This means that the repository represents not only the final code, but also my ability to:
 
-This process helped me understand the underlying concepts while also learning how to work with larger and more complex codebases.
-
----
-
-# 🧠 What I Have Learned
-
-Through these projects, I have gained practical experience with several areas of Machine Learning and Python development.
-
-### Data Processing
-
-* pandas
-* numpy
-* CSV data
-* missing values
-* categorical variables
-* data cleaning
-* feature selection
-* feature engineering
-
-### Machine Learning
-
-* Classification
-* Regression
-* Random Forest
-* Logistic Regression
-* Model comparison
-* Cross-validation
-* Hyperparameter optimization
-* Model evaluation
-
-### Imbalanced Data
-
-Several projects involve highly imbalanced datasets.
-
-I have worked with techniques and evaluation metrics such as:
-
-* SMOTE
-* Class weights
-* Precision
-* Recall
-* F1-score
-* ROC-AUC
-
-### Machine Learning Pipelines
-
-I am also working towards building reusable Machine Learning structures instead of creating every project as a completely isolated implementation.
-
-This includes separating data handling, preprocessing, model training, evaluation, and utility functionality into reusable components.
+* understand existing code
+* identify problems
+* debug implementations
+* modify functionality
+* combine different components
+* test different approaches
+* learn unfamiliar concepts independently
 
 ---
 
@@ -147,56 +102,81 @@ This includes separating data handling, preprocessing, model training, evaluatio
 
 ## Titanic – Survival Prediction
 
-A Machine Learning project focused on predicting whether a passenger survived the Titanic disaster.
+A binary classification project based on the well-known Titanic dataset.
 
-**Topics:**
+The objective is to predict whether a passenger survived based on available passenger information.
+
+**Main topics:**
 
 * Data preprocessing
 * Feature engineering
 * Binary classification
 * Model training
 * Model evaluation
-
----
-
-## Credit Fraud Detection
-
-A classification project focused on detecting fraudulent credit card transactions.
-
-A major focus of this project is the problem of **class imbalance**, where fraudulent transactions represent only a small portion of the dataset.
-
-**Topics:**
-
-* Binary classification
-* Imbalanced datasets
-* Precision and Recall
-* Model evaluation
-* Rare-event classification
-
----
-
-## Bank Churn Prediction
-
-A Machine Learning project focused on predicting whether a bank customer is likely to leave the bank.
-
-The project contains a larger Python implementation combining multiple components of a Machine Learning workflow.
-
-**Topics include:**
-
-* Data preprocessing
-* Feature engineering
-* Classification
-* Model training
-* Evaluation
-* Machine Learning pipelines
 
 ---
 
 ## Give Me Some Credit
 
-A Machine Learning project focused on predicting the probability of a borrower experiencing financial difficulties.
+A credit-risk classification project.
 
-The project provides experience with a more realistic classification problem involving financial data and imbalanced classes.
+The objective is to predict whether a person is likely to experience financial difficulties based on financial and demographic information.
+
+This project also introduced me to the challenges of working with **imbalanced datasets**.
+
+**Main topics:**
+
+* Binary classification
+* Data preprocessing
+* Imbalanced data
+* Model evaluation
+* Feature engineering
+
+---
+
+## Credit Fraud Detection
+
+A Machine Learning project for detecting fraudulent credit card transactions.
+
+Fraud detection is particularly interesting because fraudulent transactions represent only a very small portion of the dataset.
+
+This makes accuracy alone a poor indicator of model performance and requires more careful evaluation.
+
+**Main topics:**
+
+* Binary classification
+* Strong class imbalance
+* Precision
+* Recall
+* F1-score
+* Resampling techniques
+* Model evaluation
+
+---
+
+## Porto Seguro – Safe Driver Prediction
+
+A classification project based on anonymized insurance data.
+
+The goal is to predict whether an insurance customer is likely to file a claim.
+
+This project gave me experience working with larger datasets and more complex feature sets.
+
+---
+
+## Covertype – Forest Classification
+
+A multiclass classification project using geographical and environmental data to predict forest cover types.
+
+This project also introduced me to using a **neural network** for a Machine Learning classification problem.
+
+**Main topics:**
+
+* Multiclass classification
+* Neural networks
+* Feature preprocessing
+* Model training
+* Evaluation
 
 ---
 
@@ -205,23 +185,25 @@ The project provides experience with a more realistic classification problem inv
 ### Programming
 
 * Python
+* Object-Oriented Programming
 
 ### Machine Learning
 
 * scikit-learn
 * imbalanced-learn
+* Neural Networks
 
-### Data Science
+### Data Processing
 
 * pandas
-* numpy
+* NumPy
 
 ### Visualization
 
-* matplotlib
-* seaborn
+* Matplotlib
+* Seaborn
 
-### Development
+### Development Tools
 
 * Jupyter Notebook
 * Git
@@ -231,59 +213,59 @@ The project provides experience with a more realistic classification problem inv
 
 # 🤖 AI-Assisted Development
 
-AI tools are part of my modern development workflow.
+AI tools are part of my current development workflow.
 
-I use AI assistance for tasks such as:
+I use AI primarily as a learning and development assistant, for example to:
 
-* understanding unfamiliar concepts
-* investigating errors
-* exploring alternative implementations
-* refactoring
-* generating ideas
-* improving existing code
+* understand unfamiliar concepts
+* investigate errors
+* explore possible solutions
+* refactor existing code
+* compare different approaches
+* get explanations of programming concepts
 
-However, I treat generated code as a starting point rather than a finished solution.
+Some of the Python implementations in this repository were improved with AI assistance.
 
-I test, debug, understand, and adapt the resulting implementation to my own requirements.
+However, I am responsible for testing and adapting the resulting code. I debug the implementations myself and modify them according to the requirements of the project.
 
-In particular, the projects outside of `OwnVersion.ipynb` include code that was refined with AI assistance. I use these projects to demonstrate my ability to work with, understand, debug, and modify existing code.
-
-`OwnVersion.ipynb` provides a more direct example of my own implementation.
+I consider this an important part of modern software development: knowing how to use AI effectively while still understanding and being able to work with the resulting code.
 
 ---
 
-# 📚 Learning Process
+# 📚 My Learning Approach
 
-This repository is not intended to represent a finished commercial Machine Learning framework.
+This repository is intentionally not presented as a finished commercial Machine Learning framework.
 
-Instead, it documents my learning and development process.
+It documents my development as a programmer.
 
-As a result, the repository contains different development stages, experiments, older implementations, and projects created while learning new concepts.
+Some projects are experiments, some are based on courses, and others have been developed further into my own implementations.
 
-I consider this an important part of the portfolio because it shows how I approach learning:
+I believe that programming is best learned by actually building things, encountering problems, debugging them, and improving the implementation afterwards.
 
-> **I want to understand why a solution works, not just how to make it work.**
-
----
-
-# 🚀 Future Development
-
-I plan to continue improving the projects and developing my Machine Learning codebase into a more modular and reusable structure.
-
-Possible future improvements include:
-
-* improved code reusability
-* cleaner project architecture
-* automated model comparison
-* improved documentation
-* reproducible experiments
-* additional own implementations
-* more advanced Machine Learning projects
+One of my main goals is therefore not simply to get a model working, but to understand **why it works, why it fails, and how I can change it**.
 
 ---
 
-## 📌 Note
+# 🚀 Future Goals
 
-This repository is primarily a personal learning and portfolio project.
+I plan to continue expanding this repository as I improve my programming and Machine Learning skills.
 
-The different projects represent different stages of my development and are intended to provide an insight into my practical experience with Python and Machine Learning.
+Future projects will focus increasingly on:
+
+* larger and more complex datasets
+* cleaner software architecture
+* reusable Machine Learning components
+* automated model evaluation
+* more advanced Machine Learning techniques
+* Deep Learning
+* building complete end-to-end applications
+
+---
+
+## 📌 Purpose of This Repository
+
+This repository is part of my programming portfolio and demonstrates my practical experience and ongoing development in **Python and Machine Learning**.
+
+It is not intended to show that I already know everything.
+
+Instead, it shows **what I have built, what I have learned, how I solve problems, and how I continue improving my skills.**
