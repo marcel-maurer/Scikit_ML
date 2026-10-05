@@ -1,0 +1,17 @@
+# Core data and machine-learning stack
+numpy
+pandas
+scipy
+scikit-learn
+imbalanced-learn
+joblib
+
+# Visualization
+matplotlib
+seaborn
+
+# Utilities
+tqdm
+
+# Optional model used by the refactored project scripts
+xgboost
