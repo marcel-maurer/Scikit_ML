@@ -407,41 +407,51 @@ class ParamGrid():
             "precision":"precision",
 
         }
-
-    def custom_paramter_grid(self):
-
-        return {
-
-            "LogisticRegression": {
+    
+    def custom_parameter_grid(
+        LogisticRegression=False,
+        DecisionTreeClassifier=False,
+        RandomForestClassifier=False,
+        LinearSVC=False,
+        XGBClassifier=False,
+    ):
+        parameter_grid = {}
+    
+        if LogisticRegression:
+            parameter_grid["LogisticRegression"] = {
                 "estimator__C": scipy.stats.loguniform(1e-4, 1e2),
                 "estimator__penalty": ["l2"],
                 "estimator__solver": ["lbfgs"],
-            },
-
-            "DecisionTreeClassifier": {
+            }
+    
+        if DecisionTreeClassifier:
+            parameter_grid["DecisionTreeClassifier"] = {
                 "estimator__criterion": ["gini", "entropy"],
                 "estimator__max_depth": [None, 5, 10, 20],
                 "estimator__min_samples_split": scipy.stats.randint(2, 20),
                 "estimator__min_samples_leaf": scipy.stats.randint(1, 10),
-            },
-
-            "RandomForestClassifier": {
+            }
+    
+        if RandomForestClassifier:
+            parameter_grid["RandomForestClassifier"] = {
                 "estimator__n_estimators": scipy.stats.randint(100, 500),
                 "estimator__max_depth": scipy.stats.randint(5, 40),
                 "estimator__min_samples_split": scipy.stats.randint(2, 20),
                 "estimator__min_samples_leaf": scipy.stats.randint(1, 10),
                 "estimator__max_features": ["sqrt", "log2"],
                 "estimator__bootstrap": [True, False],
-            },
-
-            "LinearSVC": {
+            }
+    
+        if LinearSVC:
+            parameter_grid["LinearSVC"] = {
                 "estimator__C": scipy.stats.loguniform(1e-4, 1e2),
                 "estimator__loss": ["hinge", "squared_hinge"],
                 "estimator__dual": [True],
                 "estimator__max_iter": [5000, 10000],
-            },
-
-            "XGBClassifier": {
+            }
+    
+        if XGBClassifier:
+            parameter_grid["XGBClassifier"] = {
                 "estimator__n_estimators": scipy.stats.randint(100, 500),
                 "estimator__learning_rate": scipy.stats.loguniform(1e-3, 0.3),
                 "estimator__max_depth": scipy.stats.randint(3, 10),
@@ -449,9 +459,9 @@ class ParamGrid():
                 "estimator__colsample_bytree": scipy.stats.uniform(0.6, 0.4),
                 "estimator__gamma": scipy.stats.uniform(0, 5),
                 "estimator__min_child_weight": scipy.stats.randint(1, 10),
-            },
-
-        }
+            }
+    
+        return parameter_grid
 
 
 
