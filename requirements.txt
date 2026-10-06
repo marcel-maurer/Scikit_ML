@@ -10,8 +10,11 @@ joblib
 matplotlib
 seaborn
 
-# Utilities
+# Utilities / local AI
 tqdm
+requests
+torch
+llama-cpp-python
 
-# Optional model used by the refactored project scripts
+# Optional model used by the refactored ML project scripts
 xgboost
