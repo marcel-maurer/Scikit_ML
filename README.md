@@ -16,6 +16,8 @@ This repository documents my hands-on development from classical scikit-learn pr
 
 ## Brunno — Local AI / LLM Engineering
 
+> **Work in progress:** Brunno is an ongoing personal development project and is not finished yet. The architecture, features and code are actively being developed, tested and refactored as I continue learning and expanding the system.
+
 Brunno is my experimental local AI-agent project. It expands this portfolio beyond classical ML and explores running and integrating modern language and vision models locally.
 
 The current code includes:
