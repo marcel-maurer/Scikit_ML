@@ -46,3 +46,14 @@ ModelSaveData/
 BenchmarkResults/
 *.pkl
 *.joblib
+
+# Local LLM weights / adapters
+*.gguf
+*.ggml
+
+# Brunno private/local context
+QWEN_DATA_INFO.json
+CustomUserInfo.json
+CustomUserSensibleINfos.json
+personalityAiri2.txt
+tools.json
