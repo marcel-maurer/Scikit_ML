@@ -1,65 +1,101 @@
 # Scikit_ML
 
-Machine learning portfolio focused on practical **Python**, **scikit-learn**, data preprocessing, model evaluation, and reusable ML workflows.
+Python portfolio covering **machine learning workflows** and **local AI/LLM engineering**.
 
-This repository documents my hands-on development in machine learning: from exploratory notebook work to more structured Python implementations with preprocessing pipelines, cross-validation, hyperparameter search, class-imbalance handling, and reusable utilities.
-
-> **Portfolio note:** `Projects/OwnVersion.ipynb` represents earlier/original work. The scripts in `Projects/RefactoredVersions/` are later, more structured versions developed through further debugging, refactoring, experimentation, and AI-assisted development.
+This repository documents my hands-on development from classical scikit-learn projects to a local GGUF/llama.cpp agent project. The focus is practical implementation: preprocessing, evaluation and reusable ML pipelines on one side, and local model initialization, GPU offloading, multimodal serving and agent tooling on the other.
 
 ## Featured Projects
 
 | Project | Focus | Implementation |
 | --- | --- | --- |
+| **Brunno Local AI Agent** | Local LLMs, GGUF, llama.cpp, GPU offloading, vision models, agent tools | [AI_Agent](AI_Agent/) |
 | **Titanic Survival Prediction** | Binary classification, preprocessing, model comparison | [Titanic_Disaster.py](Projects/RefactoredVersions/Titanic_Disaster.py) |
 | **Credit Fraud Detection** | Imbalanced classification, evaluation, SMOTE-capable pipelines | [CreditFraud.py](Projects/RefactoredVersions/CreditFraud.py) |
 | **Bank Churn Prediction** | Binary classification, preprocessing, model benchmarking | [BankChurn.py](Projects/RefactoredVersions/BankChurn.py) |
-| **Original / learning implementation** | Earlier project work and experimentation | [OwnVersion.ipynb](Projects/OwnVersion.ipynb) |
+| **Original ML implementation** | Earlier project work and experimentation | [OwnVersion.ipynb](Projects/OwnVersion.ipynb) |
 
-The refactored scripts use a configurable workflow built around scikit-learn and imbalanced-learn. Depending on the project/configuration, the code includes train/test splitting, numerical and categorical preprocessing, cross-validation, randomized hyperparameter search, model comparison, optional SMOTE, result persistence, and optional XGBoost support.
+## Brunno — Local AI / LLM Engineering
 
-## Technical Focus
+Brunno is my experimental local AI-agent project. It expands this portfolio beyond classical ML and explores running and integrating modern language and vision models locally.
 
-**Machine Learning**
-- Classification workflows
-- scikit-learn pipelines
-- Cross-validation
-- Hyperparameter optimization with `RandomizedSearchCV`
-- Model comparison
-- Imbalanced-data handling with SMOTE
-- Accuracy, precision and F1-based evaluation
+The current code includes:
 
-**Data & preprocessing**
-- pandas and NumPy
-- Missing-value handling
-- Numerical scaling
-- Categorical encoding
-- Feature-engineering hooks
-- Reusable preprocessing components
+- local GGUF inference with `llama-cpp-python`
+- llama.cpp server management from Python
+- GPU-layer configuration and fallback behavior for CUDA/VRAM failures
+- configurable context size
+- Qwen text-model integration
+- Qwen-VL / multimodal model serving with an mmproj adapter
+- OpenAI-compatible local chat requests
+- external personality and memory context
+- simple memory extraction and JSON tooling
+- subprocess-based local infrastructure
 
-**Models represented in the current codebase**
-- Logistic Regression
-- Linear SVM
-- Decision Tree
-- Random Forest
-- XGBoost when installed
+The public portfolio version intentionally excludes model weights, credentials and private user/memory files. Local machine paths are configurable through environment variables instead of being tied to my development workstation.
 
-**Software development**
+**Project documentation:** [AI_Agent/README.md](AI_Agent/README.md)
+
+## Machine Learning Focus
+
+The refactored ML scripts use configurable workflows built around scikit-learn and imbalanced-learn. Depending on the project/configuration, the code includes:
+
+- train/test splitting
+- numerical and categorical preprocessing
+- scikit-learn / imbalanced-learn pipelines
+- cross-validation
+- randomized hyperparameter search
+- model comparison
+- optional SMOTE
+- result/model persistence
+- optional XGBoost support
+
+Models represented in the codebase include Logistic Regression, Linear SVM, Decision Tree, Random Forest and XGBoost.
+
+## Technical Stack
+
+**AI / LLM**
+- llama.cpp
+- llama-cpp-python
+- GGUF models
+- Qwen / Qwen-VL
+- local OpenAI-compatible endpoints
+- multimodal model adapters
+- GPU offloading / CUDA-oriented configuration
+
+**Machine Learning & Data**
+- scikit-learn
+- imbalanced-learn
+- pandas
+- NumPy
+- SciPy
+- XGBoost
+- preprocessing and feature-engineering pipelines
+- cross-validation and model evaluation
+
+**Development**
 - Python
-- Object-oriented design
-- Dataclasses and configuration objects
-- Reusable ML utilities
-- Model/result persistence
+- object-oriented design
+- dataclasses and configuration objects
+- subprocess/process management
+- JSON-based configuration/context
 - Jupyter Notebook
 - Git and GitHub
+- Linux development environment
 
 ## Repository Structure
 
 ```text
 Scikit_ML/
+├── AI_Agent/
+│   ├── AgentInits/
+│   │   ├── __init__.py
+│   │   ├── AgentConfigs.py
+│   │   ├── Agent_Presets.py
+│   │   ├── Agent_tools.py
+│   │   ├── external_subprocess_run.py
+│   │   └── init_model.py
+│   └── README.md
 ├── CSVData/
-│   ├── CreditFraud/
-│   ├── TitanicDisaster/
-│   └── bankChurn/
 ├── MLUtilitys/
 │   └── MLUtilitys.py
 ├── Projects/
@@ -75,29 +111,7 @@ Scikit_ML/
 └── README.md
 ```
 
-### `Projects/OwnVersion.ipynb`
-
-Earlier/original implementation and experimentation. I keep this material visible because it shows how my approach developed before later refactoring.
-
-### `Projects/RefactoredVersions/`
-
-More structured implementations created from further work on the original ideas. These versions focus on clearer separation of configuration, data loading, preprocessing, pipelines, validation/search, benchmarking, and persistence.
-
-### `MLUtilitys/`
-
-Reusable and experimental ML tooling. This area reflects my work toward reducing repeated setup code and building more modular workflows.
-
-### `CSVData/`
-
-Datasets or dataset references used by the projects. Some datasets may be provided as links or archives rather than duplicated as large raw files.
-
-### `courses/Udemy/`
-
-Course certificates / learning material. This directory is intentionally separated from my project implementations so that portfolio work and learning resources are distinguishable.
-
 ## Getting Started
-
-Clone the repository and create a virtual environment:
 
 ```bash
 git clone https://github.com/marcel-maurer/Scikit_ML.git
@@ -108,47 +122,26 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-On Windows, activate the environment with:
-
-```powershell
-.venv\Scripts\activate
-```
-
-The individual project scripts contain project-specific configuration such as dataset paths and target columns. Check the `Config` section of a script before running it and adapt the dataset path to your local environment.
-
-Example:
+For the Brunno project, model files are not part of the repository. Configure your local locations before running it:
 
 ```bash
-python Projects/RefactoredVersions/Titanic_Disaster.py
+export BRUNNO_HOME="$HOME/Brunno"
+export LLAMA_CPP_HOME="$HOME/llama.cpp"
 ```
 
-> Some scripts are development/refactoring versions rather than packaged command-line applications. Dataset configuration may therefore need to be adjusted before execution.
+For the classical ML scripts, check the individual `Config` section and adapt the dataset path/target to the local dataset.
 
 ## Development Approach
 
-My goal with this repository is not only to train models, but to understand and improve the complete workflow around them:
+I use this repository to document both working results and the development process behind them. Earlier implementations remain visible where useful, while later versions show refactoring, debugging and attempts to turn repeated logic into reusable components.
 
-1. inspect and prepare data,
-2. build reproducible preprocessing,
-3. compare multiple estimators,
-4. evaluate with appropriate metrics and cross-validation,
-5. tune models,
-6. debug and refactor the implementation,
-7. turn repeated logic into reusable components.
-
-This repository is intentionally a learning **and** portfolio repository. It includes both earlier work and later refactored code so that the development process remains visible.
+My current direction is moving from classical ML workflows toward complete AI applications: local inference, multimodal models, tool integration, memory/context systems, APIs and reusable agent architecture.
 
 ## AI-Assisted Development
 
-I use AI tools as part of my development and learning workflow for debugging, explanations, reviewing approaches, and refactoring.
-
-Where AI assistance has been used, I do not present generated suggestions as independently written code without qualification. I test, debug, adapt, and work through the resulting implementation. The distinction between the earlier/original work and later refactored versions is kept visible in this repository for that reason.
-
-## Current Direction
-
-I am continuing to improve the repository toward cleaner, reusable end-to-end ML projects. Current areas of interest include stronger project packaging, reproducible experiment results, automated evaluation, and connecting classical ML experience with modern AI/LLM application development.
+AI tools are part of my learning and development workflow for explanations, debugging, reviewing approaches and refactoring. AI-generated suggestions are not treated as finished solutions: I test, debug, adapt and work through the resulting implementation.
 
 ---
 
 **Author:** Marcel Maurer  
-**Focus:** Python · Machine Learning · Data Science · AI Development
+**Focus:** Python · Machine Learning · AI Engineering · Local LLMs
