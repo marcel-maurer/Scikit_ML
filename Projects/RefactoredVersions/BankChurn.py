@@ -7,23 +7,19 @@ import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
-import tkinter as tk
-import tkinter as tk
-from tkinter import filedialog
-import os
-from pathlib import Path
+from zipfile import ZipFile
 import joblib
 import numpy as np
 import pandas as pd
 import scipy.stats
-from imblearn.over_sampling import SMOTE
+from imblearn.over_sampling import SMOTE, SMOTENC, SMOTEN
 from imblearn.pipeline import Pipeline
-from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.base import BaseEstimator, TransformerMixin, clone
 from sklearn.compose import ColumnTransformer, make_column_selector
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import get_scorer
+from sklearn.metrics import get_scorer, make_scorer, f1_score, precision_score, recall_score
 from sklearn.model_selection import (
     RandomizedSearchCV,
     StratifiedKFold,
@@ -34,24 +30,17 @@ from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 from sklearn.svm import SVC , LinearSVC
 from sklearn.tree import DecisionTreeClassifier
 
-from pathlib import Path
-
 
 try:
     from xgboost import XGBClassifier
 except ImportError:
     XGBClassifier = None
 
-# ============================================================
-# CONFIG
-# ============================================================
-
 @dataclass
 class Config:
-    # Dataset
-    target: str = None
-    csv_path: str = r"Part 8 - Deep Learning/Section 39 - Artificial Neural Networks (ANN)/Part 11 - Ml Portfolio/CSVData/bankChurn/bankChurncsv.zip"
-    
+
+    target: str = "Exited"
+    csv_path: str = "CSVData/bankChurn/bankChurncsv.zip"
 
     seed: int = 1234
     test_size: float = 0.20
@@ -59,13 +48,16 @@ class Config:
     cross_validation_amount: int = 5
 
     use_grid: bool = True
-    use_tkinter:bool = False
+    use_tkinter: bool = False
+    csv_member: str | None = None
+    open_csv_directory: bool = False
 
     hyperparameter_test_amount: int = 5
 
     scoring_dict: dict[str, str] = field(default_factory=lambda: {
         "f1": "f1",
         "precision": "precision",
+        "recall": "recall",
         "accuracy": "accuracy",
     })
 
@@ -83,9 +75,9 @@ class Config:
 
     saving_model: bool = False
     save_results: bool = True
-    model_name: str = "PuertoRicoSafeDriver"
+    model_name: str = "BankChurn"
     file_type: str = ".pkl"
-    base_dir: Path = field(default_factory=Path.cwd)
+    base_dir: Path = field(default_factory=lambda: Path(__file__).resolve().parents[2])
 
     model_save_path: Path = field(init=False)
     results_path: Path = field(init=False)
@@ -93,6 +85,8 @@ class Config:
     def __post_init__(self) -> None:
         self.base_dir = Path(self.base_dir)
         self.csv_path = Path(self.csv_path)
+        if not self.csv_path.is_absolute():
+            self.csv_path = self.base_dir / self.csv_path
 
         self.model_save_path = (
             self.base_dir / "ModelSaveData" / self.model_name
@@ -196,12 +190,6 @@ class Config:
 
         return path
 
-
-
-# ============================================================
-# DATA
-# ============================================================
-
 @dataclass
 class DataContext():
     df: pd.DataFrame
@@ -220,22 +208,40 @@ class DataContext():
     def categorical_columns(self) -> list[str]:
         return self.X.select_dtypes(exclude=np.number).columns.tolist()
 
-
 class DataLoader:
     def __init__(self, config: Config) -> None:
         self.config = config
         self.df = None
 
     def load(self) -> DataContext:
+        path = self.config.csv_path
+        if not path.is_file():
+            raise FileNotFoundError(f"Dataset not found: {path}. Set Config.csv_path to your CSV or ZIP.")
+        if path.suffix.lower() == '.zip':
+            with ZipFile(path) as archive:
+                names = [n for n in archive.namelist() if n.lower().endswith('.csv') and not n.startswith('__MACOSX/')]
+                member = self.config.csv_member
+                if member is None:
+                    matches = []
+                    for name in names:
+                        with archive.open(name) as stream:
+                            if self.config.target in pd.read_csv(stream, nrows=0).columns:
+                                matches.append(name)
+                    if len(matches) != 1:
+                        raise ValueError(f"Set Config.csv_member; matching CSV files: {matches}")
+                    member = matches[0]
+                with archive.open(member) as stream:
+                    df = pd.read_csv(stream)
+        else:
+            df = pd.read_csv(path)
+        if self.config.target not in df:
+            raise ValueError(f"Missing target column: {self.config.target}")
+        y = df[self.config.target]
+        if y.isna().any() or set(y.unique()) != {0, 1}:
+            raise ValueError("The target must contain both binary classes 0 and 1, with no missing labels.")
+        self.df = df
+        return DataContext(df=df, X=df.drop(columns=self.config.target), y=y)
 
-        df = pd.read_csv(self.config.csv_path)
-
-        return DataContext(
-            df=df,
-            X=df.drop(columns=self.config.target),
-            y=df[self.config.target]
-        )
-    
 def split_data(data: DataContext, config: Config) -> None:
     (
         data.X_train,
@@ -251,13 +257,10 @@ def split_data(data: DataContext, config: Config) -> None:
         stratify=data.y,
     )
 
-# ============================================================
-# VISUALIZATION
-# ============================================================
-
 class Visualize:
     def __init__(self, data: DataContext) -> None:
         self.data = data.X
+        self.target = data.y
 
     def iqr(self, column: str) -> tuple[float, float, float]:
         q1 = self.data[column].quantile(0.25)
@@ -294,7 +297,7 @@ class Visualize:
             axes[1].axvline(mean)
             axes[1].set_title(f"Boxplot: {column}")
 
-            sns.scatterplot(self.data, x=column, ax=axes[2])
+            sns.scatterplot(x=self.data[column], y=self.target, ax=axes[2])
             axes[2].axvline(q1)
             axes[2].axvline(q3)
             axes[2].axvline(mean)
@@ -302,11 +305,6 @@ class Visualize:
 
             plt.tight_layout()
             plt.show()
-
-
-# ============================================================
-# FEATURE ENGINEERING
-# ============================================================
 
 class DataTransform(BaseEstimator, TransformerMixin):
     def fit(
@@ -322,20 +320,7 @@ class DataTransform(BaseEstimator, TransformerMixin):
     def new_features(self, X: pd.DataFrame) -> pd.DataFrame:
         x = X.copy()
 
-        # Add your feature engineering here.
-        #
-        # Example:
-        # if {"A", "B"}.issubset(x.columns):
-        #     x["A_B_ratio"] = (
-        #         x["A"] / x["B"].replace(0, np.nan)
-        #     )
-
         return x
-
-
-# ============================================================
-# PREPROCESSING
-# ============================================================
 
 def make_preprocessor() -> ColumnTransformer:
     return ColumnTransformer(
@@ -343,7 +328,7 @@ def make_preprocessor() -> ColumnTransformer:
             (
                 "numeric",
                 Pipeline([
-                    ("imputer", SimpleImputer(strategy="mean")),
+                    ("imputer", SimpleImputer(strategy="mean", keep_empty_features=True)),
                     ("scaler", MinMaxScaler()),
                 ]),
                 make_column_selector(dtype_include=np.number),
@@ -353,7 +338,7 @@ def make_preprocessor() -> ColumnTransformer:
                 Pipeline([
                     (
                         "imputer",
-                        SimpleImputer(strategy="most_frequent"),
+                        SimpleImputer(strategy="most_frequent", keep_empty_features=True),
                     ),
                     (
                         "encoder",
@@ -369,23 +354,20 @@ def make_preprocessor() -> ColumnTransformer:
         remainder="drop",
     )
 
-
-# ============================================================
-# MODELS
-# ============================================================
-
 def model_variants(config: Config) -> dict[str, Any]:
     models: dict[str, Any] = {
         "LogisticRegression": LogisticRegression(
             random_state=config.seed,
-            max_iter=1000,
+            max_iter=5000,
             verbose=config.verbose,
         ),
         "LinearSVC": LinearSVC(
+            max_iter=10000,
             random_state=config.seed,
             verbose=config.verbose,
         ),
         "RandomForestClassifier": RandomForestClassifier(
+            n_jobs=1,
             random_state=config.seed,
             verbose=config.verbose,
         ),
@@ -396,19 +378,25 @@ def model_variants(config: Config) -> dict[str, Any]:
 
     if XGBClassifier is not None:
         models["XGBClassifier"] = XGBClassifier(
+            n_jobs=1,
             random_state=config.seed,
             eval_metric="logloss",
-            verbose=config.verbose,
+            verbosity=min(config.verbose, 3),
         )
 
     return models
-
 
 def model_parameters() -> dict[str, dict[str, Any]]:
     return {
         "LogisticRegression": {
             "estimator__C": scipy.stats.loguniform(1e-4, 1e2),
             "estimator__solver": ["lbfgs"],
+        },
+        "LinearSVC": {
+            "estimator__C": scipy.stats.loguniform(1e-4, 1e2),
+            "estimator__loss": ["hinge", "squared_hinge"],
+            "estimator__dual": [True],
+            "estimator__max_iter": [5000, 10000],
         },
         "SVC": {
             "estimator__C": scipy.stats.loguniform(1e-4, 1e2),
@@ -440,47 +428,56 @@ def model_parameters() -> dict[str, dict[str, Any]]:
         },
     }
 
+class FoldSMOTE(BaseEstimator):
+    def __init__(self, random_state=1234, k_neighbors=5):
+        self.random_state = random_state
+        self.k_neighbors = k_neighbors
 
-# ============================================================
-# PIPELINE
-# ============================================================
+    def fit_resample(self, X, y):
+        counts = pd.Series(y).value_counts()
+        if len(counts) < 2:
+            raise ValueError('Oversampling requires two classes in each training fold.')
+        if counts.nunique() == 1:
+            return X, y
+        if counts.min() < 2:
+            raise ValueError('SMOTE needs at least two minority examples in each training fold.')
+        k = min(self.k_neighbors, int(counts.min()) - 1)
+        categorical = X.select_dtypes(exclude=np.number).columns.tolist()
+        kwargs = dict(random_state=self.random_state, k_neighbors=k)
+        if not categorical:
+            sampler = SMOTE(**kwargs)
+        elif len(categorical) == X.shape[1]:
+            sampler = SMOTEN(**kwargs)
+        else:
+            sampler = SMOTENC(categorical_features=categorical, **kwargs)
+        return sampler.fit_resample(X, y)
 
-def make_pipeline(
-    estimator: Any,
-    config: Config,
-    feature_engineering: bool = False,
-    smote: bool = False,
-) -> Pipeline:
-    steps: list[tuple[str, Any]] = []
+def make_scoring(config):
+    safe = {
+        'precision': make_scorer(precision_score, zero_division=0),
+        'recall': make_scorer(recall_score, zero_division=0),
+        'f1': make_scorer(f1_score, zero_division=0),
+    }
+    return {name: safe.get(scorer, scorer) if isinstance(scorer, str) else scorer for name, scorer in config.scoring_dict.items()}
 
+def make_pipeline(estimator, config, feature_engineering=False, smote=False):
+    steps = []
     if feature_engineering:
-        steps.append(
-            ("feature_engineering", DataTransform())
-        )
-
-    steps.append(
-        ("preprocessing", make_preprocessor())
-    )
-
+        steps.append(('feature_engineering', DataTransform()))
     if smote:
-        steps.append(
-            (
-                "smote",
-                SMOTE(
-                    random_state=config.seed,
-                    k_neighbors=config.smote_k_neighbors,
-                ),
-            )
-        )
-
-    steps.append(("estimator", estimator))
-
+        prepare = ColumnTransformer([
+            ('numeric', Pipeline([
+                ('imputer', SimpleImputer(strategy='mean', keep_empty_features=True)),
+                ('scaler', MinMaxScaler()),
+            ]), make_column_selector(dtype_include=np.number)),
+            ('categorical', SimpleImputer(strategy='most_frequent', keep_empty_features=True),
+             make_column_selector(dtype_exclude=np.number)),
+        ], verbose_feature_names_out=False).set_output(transform='pandas')
+        steps.append(('sampling_preparation', prepare))
+        steps.append(('smote', FoldSMOTE(config.seed, config.smote_k_neighbors)))
+    steps.append(('preprocessing', make_preprocessor()))
+    steps.append(('estimator', clone(estimator)))
     return Pipeline(steps)
-
-
-# ============================================================
-# VALIDATION / SEARCH
-# ============================================================
 
 def make_cv(config: Config) -> StratifiedKFold:
     return StratifiedKFold(
@@ -489,52 +486,25 @@ def make_cv(config: Config) -> StratifiedKFold:
         random_state=config.seed,
     )
 
-def run_cross_validation(
-    pipeline: Pipeline,
-    X_train: pd.DataFrame,
-    y_train: pd.Series,
-    config: Config,
-) -> dict[str, Any]:
+def run_cross_validation(pipeline, X_train, y_train, config):
     return cross_validate(
-        estimator=pipeline,
-        X=X_train,
-        y=y_train,
-        scoring=config.scoring_result,
-        cv=make_cv(config),
-        return_train_score=True,
-        return_estimator=True,
-        n_jobs=config.n_jobs,
-        verbose=config.verbose,
+        estimator=pipeline, X=X_train, y=y_train,
+        scoring=make_scoring(config), cv=make_cv(config),
+        return_train_score=True, n_jobs=config.n_jobs,
+        verbose=config.verbose, error_score='raise',
     )
 
-
-def run_random_search(
-    pipeline: Pipeline,
-    parameters: dict[str, Any],
-    X_train: pd.DataFrame,
-    y_train: pd.Series,
-    config: Config,
-) -> RandomizedSearchCV:
+def run_random_search(pipeline, parameters, X_train, y_train, config, fit=True):
     search = RandomizedSearchCV(
-        estimator=pipeline,
-        param_distributions=parameters,
-        n_iter=config.hyperparameter_test_amount,
-        scoring=config.scoring_dict,
-        cv=make_cv(config),
-        refit=config.refit,
-        n_jobs=config.n_jobs,
-        random_state=config.seed,
-        return_train_score=True,
-        verbose=config.verbose,
+        estimator=clone(pipeline), param_distributions=parameters,
+        n_iter=config.hyperparameter_test_amount, scoring=make_scoring(config),
+        cv=make_cv(config), refit=config.refit, n_jobs=1,
+        random_state=config.seed, return_train_score=True,
+        verbose=config.verbose, error_score='raise',
     )
-
-    search.fit(X_train, y_train)
+    if fit:
+        search.fit(X_train, y_train)
     return search
-
-
-# ============================================================
-# BENCHMARK
-# ============================================================
 
 class Benchmark:
     def __init__(
@@ -548,31 +518,18 @@ class Benchmark:
         self.best_models: dict[str, Any] = {}
 
     def run(self) -> pd.DataFrame:
+        self.results.clear()
+        self.best_models.clear()
         split_data(self.data, self.config)
-
-        if self.data.X_train is None or self.data.y_train is None:
-            raise RuntimeError("Training data is not available.")
-
-        models = model_variants(self.config)
+        if self.data.y_train.value_counts().min() < self.config.cross_validation_amount and (self.config.use_cv or self.config.use_grid):
+            raise ValueError('Too few training examples per class for the configured CV folds.')
         parameters = model_parameters()
-
-        for model_name, estimator in tqdm.tqdm(iterable=models.items() ,desc= "Benchmark"):
-
-                self.run_model(
-                    model_name,
-                    estimator,
-                    parameters.get(model_name, {}),
-                )
-
-                results = pd.DataFrame(self.results)
-
-                if self.config.save_results:
-                    results.to_csv(
-                        self.config.results_path,
-                        index=False,
-                    )
-
-                return results
+        for model_name, estimator in tqdm.tqdm(model_variants(self.config).items(), desc='Benchmark'):
+            self.run_model(model_name, estimator, parameters.get(model_name, {}))
+        results = pd.DataFrame(self.results)
+        if self.config.save_results:
+            results.to_csv(self.config.results_path, index=False)
+        return results
 
     def run_model(
         self,
@@ -587,7 +544,7 @@ class Benchmark:
             estimator,
             self.config,
             feature_engineering=False,
-            smote=False,
+            smote=self.config.use_smote,
         )
 
         self.run_experiment(
@@ -610,97 +567,54 @@ class Benchmark:
                 "transformed",
                 transformed_pipeline,
                 parameters,
-        
+
             )
 
-    def run_experiment(
-        self,
-        model_name: str,
-        experiment_name: str,
-        pipeline: Pipeline,
-        parameters: dict[str, Any],
-    ) -> None:
-        X_train = self.data.X_train
-        y_train = self.data.y_train
-
+    def run_experiment(self, model_name, experiment_name, pipeline, parameters):
+        X_train, y_train = self.data.X_train, self.data.y_train
+        use_search = self.config.use_grid and bool(parameters)
+        estimator = run_random_search(pipeline, parameters, None, None, self.config, fit=False) if use_search else clone(pipeline)
         if self.config.use_cv:
-            cv_result = run_cross_validation(
-                pipeline,
-                X_train,
-                y_train,
-                self.config,
-            )
-
+            cv = run_cross_validation(estimator, X_train, y_train, self.config)
+            for metric in self.config.scoring_dict:
+                self.results.append({
+                    'model': model_name, 'experiment': experiment_name,
+                    'method': 'nested_cross_validation' if use_search else 'cross_validation',
+                    'scoring': metric, 'score': cv[f'test_{metric}'].mean(),
+                    'score_std': cv[f'test_{metric}'].std(),
+                    'train_score': cv[f'train_{metric}'].mean(),
+                })
+        fitted = clone(estimator).fit(X_train, y_train)
+        final_model = fitted.best_estimator_ if use_search else fitted
+        key = f'{model_name}_{experiment_name}'
+        self.best_models[key] = final_model
+        if use_search:
             self.results.append({
-                "model": model_name,
-                "experiment": experiment_name,
-                "method": "cross_validation",
-                "score": np.mean(cv_result["test_score"]),
-                "score_std": np.std(cv_result["test_score"]),
-                "train_score": np.mean(cv_result["train_score"]),
-                "scoring": self.config.scoring_result,
+                'model': model_name, 'experiment': experiment_name,
+                'method': 'inner_random_search', 'scoring': self.config.refit,
+                'score': fitted.best_score_, 'score_std': np.nan, 'train_score': np.nan,
+                'best_params': json.dumps(fitted.best_params_, default=str),
+            })
+        test_scores = self.evaluate_test(final_model)
+        for name, scorer in make_scoring(self.config).items():
+            self.results.append({
+                'model': model_name, 'experiment': experiment_name,
+                'method': 'holdout_test', 'scoring': name,
+                'score': test_scores[name], 'score_std': np.nan,
+                'train_score': get_scorer(scorer)(final_model, X_train, y_train) if isinstance(scorer, str) else scorer(final_model, X_train, y_train),
             })
 
-        if self.config.use_grid and parameters:
-            search = run_random_search(
-                pipeline,
-                parameters,
-                X_train,
-                y_train,
-                self.config,
-            )
-
-            key = f"{model_name}_{experiment_name}"
-            self.best_models[key] = search.best_estimator_
-
-            self.results.append({
-                "model": model_name,
-                "experiment": experiment_name,
-                "method": "random_search",
-                "score": search.best_score_,
-                "score_std": np.nan,
-                "train_score": np.nan,
-                "scoring": self.config.refit,
-                "best_params": json.dumps(
-                    search.best_params_,
-                    default=str,
-                ),
-            })
-
-            test_scores = self.evaluate_test(
-                search.best_estimator_
-            )
-
-            self.results.append({
-                "model": model_name,
-                "experiment": experiment_name,
-                "method": "holdout_test",
-                "score": test_scores[self.config.scoring_result],
-                "score_std": np.nan,
-                "train_score": np.nan,
-                "scoring": self.config.scoring_result,
-            })
-
-    def evaluate_test(self, model: Any) -> dict[str, float]:
+    def evaluate_test(self, model):
         if self.data.X_test is None or self.data.y_test is None:
-            raise RuntimeError("Test data is not available.")
-
+            raise RuntimeError('Test data is not available.')
         return {
-            name: get_scorer(scorer)(
-                model,
-                self.data.X_test,
-                self.data.y_test,
-            )
-            for name, scorer in self.config.scoring_dict.items()
+            name: (get_scorer(scorer) if isinstance(scorer, str) else scorer)(model, self.data.X_test, self.data.y_test)
+            for name, scorer in make_scoring(self.config).items()
         }
 
     def save_best_models(self) -> None:
         for name, model in self.best_models.items():
             self.config.save_model(model, name)
-
-# ============================================================
-# MAIN
-# ============================================================
 
 def main() -> None:
     config = Config(
@@ -727,7 +641,7 @@ def main() -> None:
 
         saving_model=False,
         save_results=True,
-        use_tkinter = True,
+        use_tkinter=False,
     )
 
     config.print()
@@ -738,8 +652,9 @@ def main() -> None:
         print(f"Dataset shape: {data.df.shape}")
         print(f"Numerical: {data.numerical_columns}")
         print(f"Categorical: {data.categorical_columns}")
-        
-    config.open_csv_dir()
+
+    if config.open_csv_directory:
+        config.open_csv_dir()
     benchmark = Benchmark(config, data)
     results = benchmark.run()
 
